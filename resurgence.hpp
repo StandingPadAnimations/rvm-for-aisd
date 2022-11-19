@@ -5,11 +5,25 @@
 
 namespace rvm_cpp {
     // Result enum
-    enum Result : uint8_t {
-        ERROR = 1,
-        OK = 0
+    enum class Result : uint8_t {
+        ERROR,
+        OK
     };
 
+    // Converts Result to uint8_1 because Resurgence doesn't understand the C++ Result enum 
+    inline uint8_t result_to_rvm(Result res) {
+        if (res == Result::ERROR) {
+            return 1;
+        }
+        return 0;
+    }
+    
+    inline Result to_result(uint8_t res) {
+        if (res == 1) {
+            return Result::ERROR;
+        }
+        return Result::OK;
+    }
     // A wrapper around RVMCodeHolder from resurgence,h which manages allocation and destruction
     class RVM_CodeHolder {
         friend class RVM_Interpreter;
@@ -37,8 +51,10 @@ namespace rvm_cpp {
         // Instance of the interpreter
         RVMInterpreter* instance;
 
+        // Registers a function to the interpreter
         Result register_function(const std::string& name, uint8_t(*function)(RVMState*)) {
             auto res = rvm_interpreter_register_function(instance, function, name.c_str());
+            return to_result(res);
         }
     };
 }
