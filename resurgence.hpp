@@ -1,11 +1,13 @@
 #include "Resurgence/resurgence.h"
 #include <cstdint>
+#include <functional>
+#include <string>
 
 namespace rvm_cpp {
     // Result enum
     enum Result : uint8_t {
-        ERROR,
-        OK
+        ERROR = 1,
+        OK = 0
     };
 
     // A wrapper around RVMCodeHolder from resurgence,h which manages allocation and destruction
@@ -34,5 +36,9 @@ namespace rvm_cpp {
 
         // Instance of the interpreter
         RVMInterpreter* instance;
+
+        Result register_function(const std::string& name, uint8_t(*function)(RVMState*)) {
+            auto res = rvm_interpreter_register_function(instance, function, name.c_str());
+        }
     };
 }
